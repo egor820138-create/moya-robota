@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <title>Мини Geometry Dash</title>
+  <style>
+    canvas {
+      background: #87CEEB;
+      display: block;
+      margin: 0 auto;
+    }
+  </style>
+</head>
+<body>
+  <h1 style="text-align:center;">Geometry Dash (мини)</h1>
+  <canvas id="gameCanvas" width="600" height="200"></canvas>
+
+  <script>
+    const canvas = document.getElementById("gameCanvas");
+    const ctx = canvas.getContext("2d");
+
+    let cube = { x: 50, y: 150, size: 30, dy: 0, gravity: 0.6, jump: -10 };
+    let obstacles = [{ x: 600, y: 170, width: 20, height: 30 }];
+    let speed = 3;
+
+    function drawCube() {
+      ctx.fillStyle = "red";
+      ctx.fillRect(cube.x, cube.y, cube.size, cube.size);
+    }
+
+    function drawObstacles() {
+      ctx.fillStyle = "black";
+      obstacles.forEach(o => {
+        ctx.fillRect(o.x, o.y, o.width, o.height);
+      });
+    }
+
+    function update() {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+      // движение куба
+      cube.dy += cube.gravity;
+      cube.y += cube.dy;
+      if (cube.y > 150) { cube.y = 150; cube.dy = 0; }
+
+      // движение препятствий
+      obstacles.forEach(o => {
+        o.x -= speed;
+        if (o.x + o.width < 0) {
+          o.x = canvas.width;
+        }
+      });
+
+      drawCube();
+      drawObstacles();
+
+      requestAnimationFrame(update);
+    }
+
+    document.addEventListener("keydown", e => {
+      if (e.code === "Space" && cube.y >= 150) {
+        cube.dy = cube.jump;
+      }
+    });
+
+    update();
+  </script>
+</body>
+</html>

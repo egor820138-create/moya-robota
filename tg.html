@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+  <link rel="stylesheet" href="css/tg.css">
+</head>
+<body>
+  
+
+    <div class="quiz-box">
+      <h3>📝 Міні‑вікторина: Що ти знаєш про Землю?</h3>
+      <div id="quiz">
+        <div class="quiz-question" data-question="1">
+          <p>1. Яка частка поверхні Землі вкрита водою?</p>
+          <button onclick="checkAnswer(1,'A', this)">A) 50%</button>
+          <button onclick="checkAnswer(1,'B', this)">B) 71%</button>
+          <button onclick="checkAnswer(1,'C', this)">C) 90%</button>
+        </div>
+        <div class="quiz-question" data-question="2">
+          <p>2. Скільки часу Земля обертається навколо Сонця?</p>
+          <button onclick="checkAnswer(2,'A', this)">A) 365 днів</button>
+          <button onclick="checkAnswer(2,'B', this)">B) 180 днів</button>
+          <button onclick="checkAnswer(2,'C', this)">C) 400 днів</button>
+        </div>
+        <div class="quiz-question" data-question="3">
+          <p>3. Який природний супутник має Земля?</p>
+          <button onclick="checkAnswer(3,'A', this)">A) Марс</button>
+          <button onclick="checkAnswer(3,'B', this)">B) Місяць</button>
+          <button onclick="checkAnswer(3,'C', this)">C) Венера</button>
+        </div>
+        <div class="quiz-question" data-question="4">
+          <p>4. Яка найбільша пустеля світу?</p>
+          <button onclick="checkAnswer(4,'A', this)">A) Сахара</button>
+          <button onclick="checkAnswer(4,'B', this)">B) Антарктида</button>
+          <button onclick="checkAnswer(4,'C', this)">C) Гобі</button>
+        </div>
+        <div class="quiz-question" data-question="5">
+          <p>5. Найвища гора на Землі?</p>
+          <button onclick="checkAnswer(5,'A', this)">A) Кіліманджаро</button>
+          <button onclick="checkAnswer(5,'B', this)">B) Еверест</button>
+          <button onclick="checkAnswer(5,'C', this)">C) Монблан</button>
+        </div>
+        <div class="quiz-question" data-question="6">
+          <p>6. Який океан найбільший?</p>
+          <button onclick="checkAnswer(6,'A', this)">A) Атлантичний</button>
+          <button onclick="checkAnswer(6,'B', this)">B) Тихий</button>
+          <button onclick="checkAnswer(6,'C', this)">C) Индійський</button>
+        </div>
+        <div class="quiz-question" data-question="7">
+          <p>7. Скільки континентентів на Землі?</p>
+          <button onclick="checkAnswer(7,'A', this)">A) 5</button>
+          <button onclick="checkAnswer(7,'B', this)">B) 6</button>
+          <button onclick="checkAnswer(7,'C', this)">C) 7</button>
+        </div>
+        <div class="quiz-question" data-question="8">
+          <p>8. Яка країна має найбільше населення?</p>
+          <button onclick="checkAnswer(8,'A', this)">A) Китай</button>
+          <button onclick="checkAnswer(8,'B', this)">B) Індія</button>
+          <button onclick="checkAnswer(8,'C', this)">C) США</button>
+        </div>
+        <div class="quiz-question" data-question="9">
+          <p>9. Який материк найменший?</p>
+          <button onclick="checkAnswer(9,'A', this)">A) Австралія</button>
+          <button onclick="checkAnswer(9,'B', this)">B) Європа</button>
+          <button onclick="checkAnswer(9,'C', this)">C) Антарктида</button>
+        </div>
+        <div class="quiz-question" data-question="10">
+          <p>10. Яка річка найдовша?</p>
+          <button onclick="checkAnswer(10,'A', this)">A) Амазонка</button>
+          <button onclick="checkAnswer(10,'B', this)">B) Ніл</button>
+          <button onclick="checkAnswer(10,'C', this)">C) Янцзи</button>
+        </div>
+        <div class="quiz-question" data-question="11">
+          <p>11. Який океан найменший?</p>
+          <button onclick="checkAnswer(11,'A', this)">A) Північний Льодовитий</button>
+          <button onclick="checkAnswer(11,'B', this)">B) Індійський</button>
+          <button onclick="checkAnswer(11,'C', this)">C) Атлантичний</button>
+        </div>
+        <div class="quiz-question" data-question="12">
+          <p>12. Яка країна найбільша за площею?</p>
+          <button onclick="checkAnswer(12,'A', this)">A) США</button>
+          <button onclick="checkAnswer(12,'B', this)">B) Росія</button>
+          <button onclick="checkAnswer(12,'C', this)">C) Східна Канада (Канада)</button>
+        </div>
+      </div>
+      <p id="result" style="font-weight: bold; margin-top: 15px;">Дайте відповіді на запитання вище...</p>
+    </div>

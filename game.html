@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+  <meta charset="UTF-8">
+  <title>Міні-Minecraft з колізіями</title>
+  <style>
+    body { margin: 0; overflow: hidden; }
+    canvas { display: block; }
+    #crosshair {
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      width: 20px;
+      height: 20px;
+      margin-left: -10px;
+      margin-top: -10px;
+      pointer-events: none;
+    }
+    #crosshair:before, #crosshair:after {
+      content: '';
+      position: absolute;
+      background: white;
+    }
+    #crosshair:before { left: 9px; top: 0; width: 2px; height: 20px; }
+    #crosshair:after { top: 9px; left: 0; width: 20px; height: 2px; }
+    #inventory {
+      position: fixed;
+      bottom: 10px;
+      left: 50%;
+      transform: translateX(-50%);
+      display: flex;
+      gap: 10px;
+    }
+    .slot {
+      width: 30px;
+      height: 30px;
+      border: 2px solid white;
+      text-align: center;
+      line-height: 30px;
+      color: white;
+      font-family: sans-serif;
+    }
+    .active { border-color: yellow; }
+  </style>
+</head>
+<body>
+<div id="crosshair"></div>
+<div id="inventory">
+  <div class="slot active" id="slot1">1</div>
+  <div class="slot" id="slot2">2</div>
+  <div class="slot" id="slot3">3</div>
+</div>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/PointerLockControls.js"></script>
+<script>
+  const scene = new THREE.Scene();
+  const camera = new THREE.PerspectiveCamera(75, window.innerWidth/window.innerHeight, 0.1, 1000);
+  const renderer = new THREE.WebGLRenderer();
+  renderer.setSize(window.innerWidth, window.innerHeight);
+  document.body.appendChild(renderer.domElement);
+
+  const light = new THREE.DirectionalLight(0xffffff, 1);
+  light.position.set(5, 10, 7).normalize();
+  scene.add(light);
+
+  const controls = new THREE.PointerLockControls(camera, document.body);
+  document.body.addEventListener('click', () => controls.lock());
+
+  const velocity = new THREE.Vector3();
+  const keys = {};
+  document.addEventListener('keydown', e => keys[e.code] = true);
+  document.addEventListener('keyup', e => keys[e.code] = false);
+
+  const blockTypes = {
+    1: 0x654321, // земля
+    2: 0x888888, // камінь
+    3: 0x00ff00  // трава
+  };
+  let currentBlock = 1;
+
+  function createCube(x, y, z, color) {
+    const geometry = new THREE.BoxGeometry(1, 1, 1);
+    const material = new THREE.MeshLambertMaterial({ color });
+    const cube = new THREE.Mesh(geometry, material);
+    cube.position.set(x, y, z);
+    scene.add(cube);
+    return cube;
+  }
+
+  // Простий шум для генерації світу
+  function noise(x, z) {
+    return Math.sin(x * 0.2) * Math.cos(z * 0.2);
+  }
+
+  // Генерація світу
+  for (let x=-25; x<=25; x++) {
+    for (let z=-25; z<=25; z++) {
+      const height = Math.floor(noise(x, z) * 3 + 2);
+      for (let y=-1; y<=height; y++) {
+        let type = 1;
+        if (y < 0) type = 2;
+        if (y === height) type = 3;
+        createCube(x, y, z, blockTypes[type]);
+      }
+    }
+  }
+
+  camera.position.y = 2;
+
+  // Ламання/ставлення
+  document.addEventListener('mousedown', e => {
+    const raycaster = new THREE.Raycaster();
+    raycaster.setFromCamera(new THREE.Vector2(0,0), camera);
+    const intersects = raycaster.intersectObjects(scene.children);
+    if (intersects.length > 0) {
+      const hit = intersects[0].object;
+      if (e.button === 0) {
+        scene.remove(hit);
+      } else if (e.button === 2) {
+        const pos = hit.position.clone().add(intersects[0].face.normal);
+        createCube(pos.x, pos.y, pos.z, blockTypes[currentBlock]);
+      }
+    }
+  });
+  document.addEventListener('contextmenu', e => e.preventDefault());
+
+  // Стрибки та гравітація
+  let isJumping = false;
+  let velocityY = 0;
+  const gravity = -0.01;
+
+  document.addEventListener('keydown', e => {
+    if (e.code === 'Space' && !isJumping) {
+      velocityY = 0.2;
+      isJumping = true;
+    }
+    if (['Digit1','Digit2','Digit3'].includes(e.code)) {
+      currentBlock = parseInt(e.code.replace('Digit',''));
+      document.querySelectorAll('.slot').forEach(s => s.classList.remove('active'));
+      document.getElementById('slot'+currentBlock).classList.add('active');
+    }
+  });
+
+  // Перевірка колізій
+  function checkCollision(pos) {
+    const raycaster = new THREE.Raycaster(pos, new THREE.Vector3(0,0,0), 0, 0.5);
+    const intersects = raycaster.intersectObjects(scene.children);
+    return intersects.length > 0;
+  }
+
+  function isBlockBelow(x, y, z) {
+    const raycaster = new THREE.Raycaster(new THREE.Vector3(x,y,z), new THREE.Vector3(0,-1,0), 0, 0.5);
+    const intersects = raycaster.intersectObjects(scene.children);
+    return intersects.length > 0;
+  }
+
+  function updatePhysics() {
+    if (isJumping) {
+      camera.position.y += velocityY;
+      velocityY += gravity;
+      if (isBlockBelow(camera.position.x, camera.position.y, camera.position.z)) {
+        camera.position.y = Math.round(camera.position.y);
+        velocityY = 0;
+        isJumping = false;
+      }
+    }
+  }
+
+  function animate() {
+    requestAnimationFrame(animate);
+
+    if (controls.isLocked) {
+      let moveX = 0, moveZ = 0;
+      if (keys['KeyW']) moveZ = -0.05;
+      if (keys['KeyS']) moveZ = 0.05;
+      if (keys['KeyA']) moveX = -0.05;
+      if (keys['KeyD']) moveX = 0.05;
+
+      const nextPos = camera.position.clone();
+      nextPos.x += moveX;
+      nextPos.z += moveZ;
+
+      if (!checkCollision(nextPos)) {
+        controls.moveRight(moveX);
+        controls.moveForward(moveZ);
+      }
+    }
+
+    updatePhysics();
+    renderer.render(scene, camera);
+  }
+  animate();
+</script>
+</body>
+</html>

@@ -1,0 +1,40 @@
+import random
+import time
+
+def slow_print(text, delay=0.05):
+    for char in text:
+        print(char, end='', flush=True)
+        time.sleep(delay)
+    print()
+
+def horror_game():
+    slow_print("Ты просыпаешься в тёмной комнате...")
+    time.sleep(1)
+    slow_print("На столе лежит свеча. Зажечь её?")
+    choice = input("(да/нет): ").strip().lower()
+
+    if choice == "да":
+        slow_print("Свеча загорается... и ты видишь дверь.")
+    else:
+        slow_print("Темнота сгущается... ты слышишь шаги позади.")
+    
+    events = [
+        "Ты слышишь скрип двери.",
+        "Холодный ветер касается твоей кожи.",
+        "Шёпот зовёт тебя по имени.",
+        "На стене появляется тень."
+    ]
+
+    for i in range(3):
+        time.sleep(2)
+        slow_print(random.choice(events))
+
+    slow_print("Ты подходишь к двери... открыть её?")
+    choice2 = input("(да/нет): ").strip().lower()
+
+    if choice2 == "да":
+        slow_print("За дверью пустота. Ты падаешь в бездну...")
+    else:
+        slow_print("Ты остаёшься в комнате навсегда.")
+
+horror_game()

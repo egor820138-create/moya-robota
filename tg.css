@@ -1,0 +1,188 @@
+:root {
+  --bg-primary: #fdfdf0;
+  --bg-card: #ffffff;
+  --bg-infobox: #f8f9fa;
+  --text-main: #333333;
+  --text-muted: #555555;
+  --primary-color: #72b352;
+  --primary-hover: #619a43;
+  --border-color: #e2e8f0;
+  --shadow-sm: 0 2px 4px rgba(0, 0, 0, 0.05);
+  --shadow-md: 0 10px 15px -3px rgba(0, 0, 0, 0.05), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+  --radius-md: 12px;
+  --radius-sm: 8px;
+}
+
+/* Глобальні стилі */
+body {
+  font-family: "Segoe UI", -apple-system, BlinkMacSystemFont, Arial, sans-serif;
+  line-height: 1.7;
+  margin: 0;
+  padding: 40px 20px;
+  background-color: var(--bg-primary);
+  color: var(--text-main);
+  -webkit-font-smoothing: antialiased;
+}
+
+/* Контейнер основного тексту */
+.content {
+  max-width: 950px;
+  margin: auto;
+  background: var(--bg-card);
+  padding: 40px;
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-md);
+}
+
+/* Заголовки */
+h1 {
+  text-align: center;
+  font-size: 2.6em;
+  font-weight: 700;
+  margin-bottom: 30px;
+  padding-bottom: 15px;
+  border-bottom: 2px solid var(--border-color);
+  color: #1a1a1a;
+  letter-spacing: -0.02em;
+}
+
+h2, h3 {
+  color: #2d3748;
+  font-weight: 600;
+}
+
+/* Абзаци */
+p {
+  margin-bottom: 20px;
+  text-align: justify;
+  font-size: 1.05em;
+  color: var(--text-main);
+}
+
+/* Сучасний Інфобокс */
+.infobox {
+  float: right;
+  width: 280px;
+  background: var(--bg-infobox);
+  border: 1px solid var(--border-color);
+  padding: 20px;
+  margin: 0 0 20px 25px;
+  font-size: 0.95em;
+  border-radius: var(--radius-sm);
+  box-shadow: var(--shadow-sm);
+}
+
+.infobox h2 {
+  text-align: center;
+  font-size: 1.25em;
+  margin-top: 0;
+  margin-bottom: 15px;
+  border-bottom: 1px solid var(--border-color);
+  padding-bottom: 8px;
+}
+
+.infobox p {
+  margin: 8px 0;
+  font-size: 1em;
+  text-align: left;
+}
+
+/* Посилання */
+a {
+  color: #1a56db;
+  text-decoration: none;
+  font-weight: 500;
+  transition: color 0.2s ease;
+}
+
+a:hover {
+  color: #0445d4;
+  text-decoration: underline;
+}
+
+/* Таблиці */
+table {
+  border-collapse: collapse;
+  width: 100%;
+  margin: 25px 0;
+  font-size: 0.95em;
+  box-shadow: var(--shadow-sm);
+  border-radius: var(--radius-sm);
+  overflow: hidden;
+}
+
+table, th, td {
+  border: 1px solid var(--border-color);
+}
+
+th, td {
+  padding: 12px 16px;
+  text-align: left;
+}
+
+th {
+  background-color: #f1f5f9;
+  color: #334155;
+  font-weight: 600;
+}
+
+tr:nth-child(even) {
+  background-color: #f8fafc;
+}
+
+/* Редизайн кнопки (Ефектний 3D-нейморфізм замінено на чистий Flat з м'якою тінню) */
+.myButton {
+  display: inline-block;
+  cursor: pointer;
+  background: var(--primary-color);
+  color: #ffffff;
+  font-family: inherit; /* прибрано старомодний Courier New */
+  font-size: 16px;       /* адекватний розмір для тексту */
+  font-weight: 600;
+  padding: 12px 24px;
+  border-radius: 30px;
+  text-decoration: none;
+  border: none;
+  box-shadow: 0 4px 6px -1px rgba(114, 179, 82, 0.4);
+  transition: all 0.2s ease-in-out;
+  text-align: center;
+}
+
+.myButton:hover {
+  background: var(--primary-hover);
+  transform: translateY(-2px);
+  box-shadow: 0 10px 15px -3px rgba(114, 179, 82, 0.5);
+  text-decoration: none;
+}
+
+.myButton:active {
+  transform: translateY(0);
+}
+
+/* Адаптивність для мобільних пристроїв */
+@media (max-width: 768px) {
+  body {
+    padding: 15px 10px;
+  }
+  
+  .content {
+    padding: 20px;
+  }
+  
+  .infobox {
+    float: none;
+    width: 100%;
+    margin: 0 0 20px 0;
+    box-sizing: border-box;
+  }
+  
+  p {
+    text-align: left; /* на смартфонах вирівнювання justify створює потворні дірки */
+  }
+
+  .myButton {
+    display: block;
+    width: 100%;
+    box-sizing: border-box;
+  }
+}

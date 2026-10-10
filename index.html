@@ -1,0 +1,503 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Планета Земля — Інтерактивна сторінка</title>
+  
+  <link rel="shortcut icon" href="https://thf.bing.com/th/id/OIP.HjSnmxQDQ7JSacfHGpkF7wHaEK?w=278&h=180&c=7&r=0&o=7&cb=thfc1falcon2&dpr=1.3&pid=1.7&rm=3" type="image/png">
+
+  <style>
+    /* CSS-ЗМІННІ ДЛЯ КЕРУВАННЯ ТЕМАМИ */
+    :root {
+      --bg-primary: #fdfdf0;
+      --bg-card: #ffffff;
+      --bg-infobox: #f8f9fa;
+      --text-main: #333333;
+      --text-muted: #555555;
+      --primary-color: #72b352;
+      --primary-hover: #619a43;
+      --border-color: #e2e8f0;
+      --shadow-sm: 0 2px 4px rgba(0, 0, 0, 0.05);
+      --shadow-md: 0 10px 15px -3px rgba(0, 0, 0, 0.05), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+      --radius-md: 12px;
+      --radius-sm: 8px;
+    }
+
+    body.dark {
+      --bg-primary: #1a1a1a;
+      --bg-card: #2d2d2d;
+      --bg-infobox: #3d3d3d;
+      --text-main: #f9f9f9;
+      --text-muted: #cdcdcd;
+      --border-color: #444444;
+    }
+
+    /* ГЛОБАЛЬНІ СТИЛІ */
+    body {
+      font-family: "Segoe UI", -apple-system, BlinkMacSystemFont, Arial, sans-serif;
+      line-height: 1.7;
+      margin: 0;
+      padding: 40px 20px;
+      background-color: var(--bg-primary);
+      color: var(--text-main);
+      transition: background 0.3s, color 0.3s;
+    }
+
+    /* Лінія прогресу читання */
+    #progress-bar {
+      position: fixed;
+      top: 0;
+      left: 0;
+      height: 4px;
+      background: var(--primary-color);
+      width: 0%;
+      z-index: 9999;
+      transition: width 0.1s ease;
+    }
+
+    .content {
+      max-width: 950px;
+      margin: auto;
+      background: var(--bg-card);
+      padding: 40px;
+      border-radius: var(--radius-md);
+      box-shadow: var(--shadow-md);
+    }
+
+    h1 {
+      text-align: center;
+      font-size: 2.6em;
+      margin-bottom: 25px;
+      padding-bottom: 15px;
+      border-bottom: 2px solid var(--border-color);
+    }
+
+    p {
+      margin-bottom: 20px;
+      text-align: justify;
+      font-size: 1.05em;
+    }
+
+    .section {
+      display: flex;
+      align-items: flex-start;
+      margin-bottom: 20px;
+      gap: 20px;
+    }
+
+    .text { flex: 2; }
+    .image { flex: 1; text-align: right; }
+    .image img { max-width: 100%; height: auto; border-radius: var(--radius-sm); }
+
+    /* Інфобокс */
+    .infobox {
+      float: right;
+      width: 280px;
+      background: var(--bg-infobox);
+      border: 1px solid var(--border-color);
+      padding: 20px;
+      margin: 0 0 20px 25px;
+      font-size: 0.95em;
+      border-radius: var(--radius-sm);
+      box-shadow: var(--shadow-sm);
+    }
+    .infobox h2 { text-align: center; margin-top: 0; font-size: 1.25em; }
+
+    /* ФУНКЦІОНАЛЬНІ БЛОКИ */
+    .widget-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 20px;
+      margin: 30px 0;
+    }
+
+    .interactive-box {
+      padding: 20px;
+      border: 2px solid var(--primary-color);
+      border-radius: var(--radius-sm);
+      background: var(--bg-infobox);
+      box-shadow: var(--shadow-sm);
+    }
+
+    .interactive-box h3 { margin-top: 0; color: var(--primary-color); }
+
+    input[type="number"] {
+      padding: 8px;
+      border-radius: 6px;
+      border: 1px solid var(--border-color);
+      width: 100px;
+      margin-right: 10px;
+      background: var(--bg-card);
+      color: var(--text-main);
+    }
+
+    /* Кнопки */
+    .myButton, .theme-toggle, .interactive-box button, .quiz-box button, .game-box button {
+      display: inline-block;
+      cursor: pointer;
+      background: var(--primary-color);
+      color: #ffffff;
+      font-size: 15px;
+      font-weight: 600;
+      padding: 10px 20px;
+      border-radius: 30px;
+      text-decoration: none;
+      border: none;
+      margin: 5px;
+      box-shadow: 0 4px 6px -1px rgba(114, 179, 82, 0.3);
+      transition: all 0.2s ease;
+    }
+
+    .myButton:hover, .theme-toggle:hover, .interactive-box button:hover, .quiz-box button:hover:not(:disabled), .game-box button:hover {
+      background: var(--primary-hover);
+      transform: translateY(-1px);
+    }
+
+    /* Стилі для результатів кнопок у вікторині */
+    .quiz-box button.correct-ans {
+      background: #2e7d32 !important; /* Зелений */
+      box-shadow: none;
+      cursor: default;
+    }
+
+    .quiz-box button.wrong-ans {
+      background: #c62828 !important; /* Червоний */
+      box-shadow: none;
+      cursor: default;
+    }
+
+    .quiz-box button:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+    }
+
+    .quiz-box, .share-buttons, .game-box {
+      margin-top: 30px;
+      padding: 20px;
+      border: 2px solid var(--primary-color);
+      border-radius: var(--radius-md);
+      background: var(--bg-infobox);
+    }
+
+    .game-box {
+      text-align: center;
+    }
+
+    .quiz-question {
+      margin-top: 15px;
+      border-bottom: 1px dashed var(--border-color);
+      padding-bottom: 15px;
+    }
+
+    iframe { display: block; margin: 30px auto; max-width: 100%; border: none; border-radius: var(--radius-sm); }
+
+    /* Адаптивність */
+    @media (max-width: 768px) {
+      body { padding: 15px 10px; }
+      .section, .widget-grid { grid-template-columns: 1fr; flex-direction: column; }
+      .infobox { float: none; width: 100%; margin: 0 0 20px 0; }
+      p { text-align: left; }
+      .myButton, .theme-toggle, .interactive-box button, .quiz-box button, .game-box button { display: block; width: 100%; box-sizing: border-box; }
+    }
+  </style>
+</head>
+<body class="light">
+   <marquee behavior="" direction="left" style="color: #1a1a1a;font-size: 20px;">Це мій перший сайт</marquee>
+  <div id="progress-bar"></div>
+
+  <div class="content">
+    <div style="display: flex; justify-content: space-between; flex-wrap: wrap; margin-bottom: 20px;">
+      <button class="theme-toggle" onclick="toggleTheme()">🌓 Змінити тему</button>
+      <button class="theme-toggle" onclick="translatePage()">🌐 Translate / Переклад</button>
+    </div>
+
+    <h1>Земля</h1>
+
+    <div style="text-align: center; margin-bottom: 20px; font-weight: 500;" id="cosmic-clock">
+      Завантаження космічного часу...
+    </div>
+
+    <div class="infobox">
+      <h2>Основні дані</h2>
+      <p><strong>Радіус:</strong> ~6371 км</p>
+      <p><strong>Площа поверхні:</strong> ~510 млн км²</p>
+      <p><strong>Вода:</strong> ~71%</p>
+      <p><strong>Супутник:</strong> Місяць</p>
+    </div>
+
+    <div class="section">
+      <div class="text" id="text">
+        <div id="earthText">
+          <p><a href="https://uk.wikipedia.org/wiki/%D0%97%D0%B5%D0%BC%D0%BB%D1%8F" target="_blank">Земля</a> — третя планета від Сонця та єдина відома на сьогодні небесна сфера, де існує життя. Вона належить до планет земної групи й має тверду поверхню, океани та атмосферу, що створюють унікальні умови для розвитку біосфери. Форма Землі близька до кулі, але через обертання навколо своєї осі вона дещо сплюснута біля полюсів.</p>
+        </div>
+        <p>Земля складається з кількох оболонок: літосфери, гідросфери, атмосфери та біосфери. Взаємодія цих оболонок забезпечує існування різноманітних екосистем. Атмосфера складається переважно з азоту та кисню.</p>
+        <p>Земля здійснює два основні рухи: обертання навколо своєї осі, що зумовлює зміну дня і ночі, та обертання навколо Сонця, яке визначає пори року. Магнітне поле Землі захищає її від сонячного вітру та космічної радіації.</p>
+      </div>
+
+      <div class="image">
+        <img src="https://th.bing.com/th/id/OIP.HjSnmxQDQ7JSacfHGpkF7wHaEK?w=318&h=180&c=7&r=0&o=7&dpr=1.3&pid=1.7&rm=3" alt="Земля">
+        <br><br>
+        <a href="https://www.google.com/maps" target="_blank" class="myButton">🗺️ Відкрити Гугл мапу</a>
+      </div>
+    </div>
+
+    <div class="widget-grid">
+      <div class="interactive-box" id="weather-widget">
+        <h3>🌤️ Погода на Землі (Київ)</h3>
+        <p id="weather-info">Отримання метеоданих...</p>
+        <button onclick="fetchWeather()">Оновити погоду</button>
+      </div>
+
+      <div class="interactive-box">
+        <h3>⚖️ Твоя вага на інших планетах</h3>
+        <label for="user-weight">Вага на Землі (кг): </label>
+        <input type="number" id="user-weight" value="70" oninput="calculateWeight()">
+        <p style="margin-top: 10px; font-size: 0.95em;">
+          🪐 На Марсі: <strong id="weight-mars">26.6</strong> кг<br>
+          🚀 На Юпітері: <strong id="weight-jupiter">177.1</strong> кг
+        </p>
+      </div>
+    </div>
+
+    <iframe width="100%" height="450" src="https://www.youtube.com/embed/D7Xs7bnGllM" title="Документальний фильм HD Земля" allowfullscreen></iframe>
+
+    <div class="quiz-box">
+      <h3>📝 Міні‑вікторина: Що ти знаєш про Землю?</h3>
+      <div id="quiz">
+        <div class="quiz-question" data-question="1">
+          <p>1. Яка частка поверхні Землі вкрита водою?</p>
+          <button onclick="checkAnswer(1,'A', this)">A) 50%</button>
+          <button onclick="checkAnswer(1,'B', this)">B) 71%</button>
+          <button onclick="checkAnswer(1,'C', this)">C) 90%</button>
+        </div>
+        <div class="quiz-question" data-question="2">
+          <p>2. Скільки часу Земля обертається навколо Сонця?</p>
+          <button onclick="checkAnswer(2,'A', this)">A) 365 днів</button>
+          <button onclick="checkAnswer(2,'B', this)">B) 180 днів</button>
+          <button onclick="checkAnswer(2,'C', this)">C) 400 днів</button>
+        </div>
+        <div class="quiz-question" data-question="3">
+          <p>3. Який природний супутник має Земля?</p>
+          <button onclick="checkAnswer(3,'A', this)">A) Марс</button>
+          <button onclick="checkAnswer(3,'B', this)">B) Місяць</button>
+          <button onclick="checkAnswer(3,'C', this)">C) Венера</button>
+        </div>
+        <div class="quiz-question" data-question="4">
+          <p>4. Яка найбільша пустеля світу?</p>
+          <button onclick="checkAnswer(4,'A', this)">A) Сахара</button>
+          <button onclick="checkAnswer(4,'B', this)">B) Антарктида</button>
+          <button onclick="checkAnswer(4,'C', this)">C) Гобі</button>
+        </div>
+        <div class="quiz-question" data-question="5">
+          <p>5. Найвища гора на Землі?</p>
+          <button onclick="checkAnswer(5,'A', this)">A) Кіліманджаро</button>
+          <button onclick="checkAnswer(5,'B', this)">B) Еверест</button>
+          <button onclick="checkAnswer(5,'C', this)">C) Монблан</button>
+        </div>
+        <div class="quiz-question" data-question="6">
+          <p>6. Який океан найбільший?</p>
+          <button onclick="checkAnswer(6,'A', this)">A) Атлантичний</button>
+          <button onclick="checkAnswer(6,'B', this)">B) Тихий</button>
+          <button onclick="checkAnswer(6,'C', this)">C) Индійський</button>
+        </div>
+        <div class="quiz-question" data-question="7">
+          <p>7. Скільки континентентів на Землі?</p>
+          <button onclick="checkAnswer(7,'A', this)">A) 5</button>
+          <button onclick="checkAnswer(7,'B', this)">B) 6</button>
+          <button onclick="checkAnswer(7,'C', this)">C) 7</button>
+        </div>
+        <div class="quiz-question" data-question="8">
+          <p>8. Яка країна має найбільше населення?</p>
+          <button onclick="checkAnswer(8,'A', this)">A) Китай</button>
+          <button onclick="checkAnswer(8,'B', this)">B) Індія</button>
+          <button onclick="checkAnswer(8,'C', this)">C) США</button>
+        </div>
+        <div class="quiz-question" data-question="9">
+          <p>9. Який материк найменший?</p>
+          <button onclick="checkAnswer(9,'A', this)">A) Австралія</button>
+          <button onclick="checkAnswer(9,'B', this)">B) Європа</button>
+          <button onclick="checkAnswer(9,'C', this)">C) Антарктида</button>
+        </div>
+        <div class="quiz-question" data-question="10">
+          <p>10. Яка річка найдовша?</p>
+          <button onclick="checkAnswer(10,'A', this)">A) Амазонка</button>
+          <button onclick="checkAnswer(10,'B', this)">B) Ніл</button>
+          <button onclick="checkAnswer(10,'C', this)">C) Янцзи</button>
+        </div>
+        <div class="quiz-question" data-question="11">
+          <p>11. Який океан найменший?</p>
+          <button onclick="checkAnswer(11,'A', this)">A) Північний Льодовитий</button>
+          <button onclick="checkAnswer(11,'B', this)">B) Індійський</button>
+          <button onclick="checkAnswer(11,'C', this)">C) Атлантичний</button>
+        </div>
+        <div class="quiz-question" data-question="12">
+          <p>12. Яка країна найбільша за площею?</p>
+          <button onclick="checkAnswer(12,'A', this)">A) США</button>
+          <button onclick="checkAnswer(12,'B', this)">B) Росія</button>
+          <button onclick="checkAnswer(12,'C', this)">C) Східна Канада (Канада)</button>
+        </div>
+      </div>
+      <p id="result" style="font-weight: bold; margin-top: 15px;">Дайте відповіді на запитання вище...</p>
+    </div>
+
+    <div class="game-box">
+      <h3>🌍 Міні‑гра: Знайди континент</h3>
+      <p id="question">На якому континенті знаходиться річка Амазонка?</p>
+
+      <button onclick="checkContinent('Африка')">Африка</button>
+      <button onclick="checkContinent('Південна Америка')">Південна Америка</button>
+      <button onclick="checkContinent('Європа')">Європа</button>
+      <button onclick="checkContinent('Азія')">Азія</button>
+
+      <p id="result1" style="font-weight: bold; margin-top: 15px;">Дайте відповідь на запитання вище...</p>
+    </div>
+<aside style="margin-top: 40px; text-align: center;">
+      <h2>Мої роботи</h2>
+      <a href="gradient.html" class="myButton" target="_blank">Градієнти</a>
+      <a href="base.html" class="myButton" target="_blank">База</a>
+      <a href="symbols.html" class="myButton" target="_blank">Символи</a>
+      <a href="lists.html" class="myButton" target="_blank">Листи</a>
+      <a href="text.html" class="myButton" target="_blank">Текст</a>
+      <a href="table.html" class="myButton" target="_blank">Тейбл</a>
+      <a href="imange.html" class="myButton" target="_blank">Зображення</a>
+    </aside>
+
+    <div class="share-buttons">
+      <h3>Поділитися сторінкою:</h3>
+      <a href="https://www.facebook.com/sharer/sharer.php?u=https://example.com" target="_blank" class="myButton">Facebook</a>
+      <a href="https://twitter.com/intent/tweet?url=https://example.com" target="_blank" class="myButton">Twitter</a>
+      <a href="https://t.me/share/url?url=https://example.com" target="_blank" class="myButton">Telegram</a>
+    </div>
+
+    
+    <div style="text-align: center; margin-top: 30px;">
+      <a href="#text" class="myButton">⬆️ Нагору</a>
+    </div>
+  </div>
+
+  <script>
+    function toggleTheme() {
+      document.body.classList.toggle('dark');
+      document.body.classList.toggle('light');
+      localStorage.setItem('theme', document.body.classList.contains('dark') ? 'dark' : 'light');
+    }
+
+    window.onscroll = function() {
+      const winScroll = document.body.scrollTop || document.documentElement.scrollTop;
+      const height = document.documentElement.scrollHeight - document.documentElement.clientHeight;
+      const scrolled = (winScroll / height) * 100;
+      document.getElementById("progress-bar").style.width = scrolled + "%";
+    };
+
+    function updateClock() {
+      const now = new Date();
+      const start = new Date(now.getFullYear(), 0, 0);
+      const diff = now - start;
+      const oneDay = 1000 * 60 * 60 * 24;
+      const dayOfYear = Math.floor(diff / oneDay);
+      
+      document.getElementById('cosmic-clock').innerHTML = 
+        `🕒 Поточний час на Землі: ${now.toLocaleTimeString('uk-UA')} | 📅 Поточна дата: ${now.toLocaleDateString('uk-UA')} (День року: ${dayOfYear}/365)`;
+    }
+    setInterval(updateClock, 1000);
+
+    function calculateWeight() {
+      const earthWeight = parseFloat(document.getElementById('user-weight').value) || 0;
+      document.getElementById('weight-mars').textContent = (earthWeight * 0.38).toFixed(1);
+      document.getElementById('weight-jupiter').textContent = (earthWeight * 2.53).toFixed(1);
+    }
+
+    async function fetchWeather() {
+      const infoText = document.getElementById('weather-info');
+      try {
+        infoText.textContent = "Оновлення...";
+        const response = await fetch('https://api.open-meteo.com/v1/forecast?latitude=50.4501&longitude=30.5234&current_weather=true');
+        const data = await response.json();
+        const temp = data.current_weather.temperature;
+        const wind = data.current_weather.windspeed;
+        infoText.innerHTML = `📍 Місто: Київ<br>🌡️ Тек Погода: <strong>${temp}°C</strong><br>💨 Вітер: ${wind} км/год`;
+      } catch (error) {
+        infoText.textContent = "Не вдалося завантажити погоду.";
+      }
+    }
+
+    let translated = false;
+    function translatePage() {
+      const textBlock = document.getElementById("earthText");
+      if (!translated) {
+        textBlock.innerHTML = `<p>Earth is the third planet from the Sun and the only known celestial body where life exists. It belongs to the terrestrial planet group and has a solid surface, oceans, and an atmosphere, creating unique conditions for the development of the biosphere.</p>`;
+        translated = true;
+      } else {
+        textBlock.innerHTML = `<p><a href="https://uk.wikipedia.org/wiki/%D0%97%D0%B5%D0%BC%D0%BB%D1%8F" target="_blank">Земля</a> — третя планета від Сонця та єдина відома на сьогодні небесна сфера, де існує життя. Вона належить до планет земної групи й має тверду поверхню, океани та атмосферу, що створюють унікальні умови для розвитку біосфери.</p>`;
+        translated = false;
+      }
+    }
+
+    const quizAnswers = { 
+      1: 'B', 2: 'A', 3: 'B', 4: 'B', 5: 'B', 6: 'B', 
+      7: 'C', 8: 'B', 9: 'A', 10: 'B', 11: 'A', 12: 'B' 
+    };
+    let userAnswers = {};
+
+    function checkAnswer(question, choice, buttonElement) {
+      if (userAnswers[question]) return;
+
+      userAnswers[question] = choice;
+      const isCorrect = (choice === quizAnswers[question]);
+      
+      const questionBlock = buttonElement.closest('.quiz-question');
+      const buttons = questionBlock.querySelectorAll('button');
+
+      buttons.forEach(btn => {
+        btn.disabled = true;
+      });
+
+      if (isCorrect) {
+        buttonElement.classList.add('correct-ans');
+        buttonElement.innerHTML += " (Правильно! ✅)";
+      } else {
+        buttonElement.classList.add('wrong-ans');
+        buttonElement.innerHTML += " (Неправильно ❌)";
+        
+        buttons.forEach(btn => {
+          if (btn.getAttribute('onclick').includes(`'${quizAnswers[question]}'`)) {
+            btn.classList.add('correct-ans');
+          }
+        });
+      }
+
+      let score = 0;
+      let answeredCount = Object.keys(userAnswers).length;
+      const totalQuestions = Object.keys(quizAnswers).length;
+
+      for (let key in userAnswers) {
+        if (userAnswers[key] === quizAnswers[key]) score++;
+      }
+
+      if (answeredCount === totalQuestions) {
+        document.getElementById('result').innerHTML = `🎉 Вікторину завершено! Ваш фінальний результат: <span style="color: green;">${score} з ${totalQuestions}</span>`;
+      } else {
+        document.getElementById('result').textContent = `Проміжний результат: ${score} з ${totalQuestions} (Відповідей: ${answeredCount})`;
+      }
+    }
+
+    const correctAnswer = "Південна Америка";
+    function checkContinent(choice) {
+      const result = document.getElementById("result1");
+      if (choice === correctAnswer) {
+        result.innerHTML = `<span style="color: #2e7d32;">✅ Правильно! Амазонка протікає у Південній Америці.</span>`;
+      } else {
+        result.innerHTML = `<span style="color: #c62828;">❌ Неправильно. Спробуй ще!</span>`;
+      }
+    }
+
+    window.onload = function() {
+      const savedTheme = localStorage.getItem('theme') || 'light';
+      document.body.className = savedTheme;
+      updateClock();
+      fetchWeather();
+    };
+  </script>
+</body>
+</html>
